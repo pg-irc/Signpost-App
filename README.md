@@ -1,4 +1,4 @@
-# Refugee Info / Khabrona / CuentaNos Frontend
+# Refugee Info / Khabrona / CuentaNos Native Frontend
 
 This project is the front end project that powers the following websites:
 
@@ -20,18 +20,26 @@ https://nodejs.org/en/download/package-manager/
 
 `sudo npm install babel-cli react-native-cli -g`
 
+## React Native
+
+Full instructions here:
+
+https://facebook.github.io/react-native/docs/getting-started.html
+
+Under "Building Projects with Native Code" tab.
+
+Gist: `npm install -g react-native-cli`
+
 # Running
 
-To install the project dependencies:
+### To install the project dependencies:
 
 `npm install`
 
-To compile css:
+### To run the project:
 
-`npm run build-css`
+`react-native run-ios` or `react-native run-android`
 
-(Alternatively to watch the scss files for changes: `npm run watch css`)
+### Building assets:
 
-To run the react project:
-
-`node scripts/start`
+TBD

@@ -1,7 +1,9 @@
 import React, { Component } from "react";
 import { translate } from "react-i18next";
 import PropTypes from "prop-types";
-import "./HeaderBar.css";
+import { View,  Button, StyleSheet, Image } from "react-native";
+import styles from "./HeaderBarStyles";
+import Text from "./Text";
 
 const generateKey = pre => {
 	return `${pre}_${new Date().getTime()}`;
@@ -10,31 +12,24 @@ const generateKey = pre => {
 class HeaderBar extends Component {
 	static propTypes = {
 		subtitle: PropTypes.any,
-		title: PropTypes.string.isRequired,
+		title: PropTypes.string,
+	};
+	static contextTypes = {
+		theme: PropTypes.object,
 	};
 
 	render() {
 		const { subtitle, title, children } = this.props;
 		const triggerKey = generateKey("trigger");
+
 		return (
-			<div className="HeaderBar">
-				<input type="checkbox" name={triggerKey} id={triggerKey} />
-				<label htmlFor={triggerKey}>
-					<h1>
-						{subtitle && <small>{subtitle}</small>}
-						{title}
-					</h1>
-					{children && [
-						<div className="up" key={"up"}>
-							<i className="material-icons">keyboard_arrow_up</i>
-						</div>,
-						<div className="down" key={"down"}>
-							<i className="material-icons">keyboard_arrow_down</i>
-						</div>,
-					]}
-				</label>
-				{children && <ul>{children}</ul>}
-			</div>
+			<View style={styles.HeaderBar}>
+				<View style={styles.titleContainer}>
+					{subtitle && <Text style={styles.subtitle}>{subtitle}</Text>}
+					<Text style={styles.title}>{title}</Text>
+				</View>
+				<View>{children}</View>
+			</View>
 		);
 	}
 }

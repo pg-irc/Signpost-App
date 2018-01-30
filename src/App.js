@@ -1,64 +1,23 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import MuiThemeProvider from "material-ui/styles/MuiThemeProvider";
-import { createMuiTheme } from "material-ui/styles";
 import Router from "./router";
-import cmsApi from "./content/cmsApi";
-import cms from "./content/cms";
-import PropTypes from "prop-types";
+import getSessionStorage from "./shared/sessionStorage";
 
-import { Helmet } from "react-helmet";
-import "./App.css";
-
-const theme = createMuiTheme({
-	overrides: {
-		MuiBottomNavigationButton: {
-			selected: {
-				color: "#000000",
-			},
-		},
-	},
-});
-
-class ThemedApp extends Component {
-	static childContextTypes = {
-		config: PropTypes.object,
-		api: PropTypes.object,
-	};
-
-	getChildContext() {
-		let config = cms.siteConfig;
-		let api = cmsApi(config, {});
-		return {
-			config,
-			api,
-		};
-	}
-	
+global.sessionStorage = getSessionStorage();
+global.localStorage = getSessionStorage();
+class App extends Component {
 	render() {
 		const { direction, language } = this.props;
-		const organization = cms.siteConfig.theme;
 
-		return (
-			<MuiThemeProvider theme={theme}>
-				<span className={[organization, direction, `language-${language}`].join(" ")}>
-					<Helmet>
-						<title>{cms.siteConfig.title}</title>
-						<link rel="shortcut icon" href={cms.siteConfig.favicon} />
-						<link rel="icon" href={cms.siteConfig.favicon} />
-					</Helmet>
-					<Router />
-				</span>
-			</MuiThemeProvider>
-		);
+		return <Router direction={direction} />;
 	}
 }
 
-ThemedApp = connect(({ organization, direction, language }) => {
+App = connect(({ organization, direction, language }) => {
 	return {
 		direction,
 		language,
 	};
-})(ThemedApp);
+})(App);
 
-export default ThemedApp;
+export default App;

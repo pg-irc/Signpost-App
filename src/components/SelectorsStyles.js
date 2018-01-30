@@ -1,7 +1,7 @@
 "use strict";
 import { StyleSheet } from "react-native";
 
-import { width, height } from "../../shared/nativeDimensions";
+import { width, height } from "../shared/nativeDimensions";
 
 export default StyleSheet.create({
 	Selectors: {

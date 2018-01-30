@@ -1,8 +1,8 @@
 "use strict";
 import { StyleSheet } from "react-native";
 
-import { width, height } from "../../shared/nativeDimensions";
-import nativeColors from "../../shared/nativeColors";
+import { width, height } from "../shared/nativeDimensions";
+import nativeColors from "../shared/nativeColors";
 const { titleBackground, dividerBackground, lighten } = nativeColors;
 export default StyleSheet.create({
 	HeaderBar: {

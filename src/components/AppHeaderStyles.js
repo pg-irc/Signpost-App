@@ -1,6 +1,6 @@
 "use strict";
 import { StyleSheet } from "react-native";
-import window from "../../shared/nativeDimensions";
+import window from "../shared/nativeDimensions";
 
 export default StyleSheet.create({
 	header: {

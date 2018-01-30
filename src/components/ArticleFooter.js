@@ -1,101 +1,101 @@
 import React, { Component } from "react";
-import PropTypes from "prop-types";
-import { NavigateBefore, NavigateNext, Share } from "material-ui-icons";
 import { translate } from "react-i18next";
+import { View, Button, StyleSheet, Image, TouchableOpacity } from "react-native";
+import PropTypes from "prop-types";
+import Text from "./Text";
+import MDIcon from "react-native-vector-icons/MaterialIcons";
+import nativeColors from "../shared/nativeColors";
 
-import "./ArticleFooter.css";
-
-/**
- * 
- */
 class ArticleFooter extends Component {
-	static propTypes = {
-		onNavigateTo: PropTypes.func,
-		country: PropTypes.object,
+	static propTypes = {};
+
+	static contextTypes = {
+		theme: PropTypes.object,
 		direction: PropTypes.string,
-		match: PropTypes.shape({
-			pathName: PropTypes.string,
-		}),
-		previous: PropTypes.shape({
-			slug: PropTypes.string,
-			title: PropTypes.string,
-		}),
-		next: PropTypes.shape({
-			slug: PropTypes.string,
-			title: PropTypes.string,
-		}),
+		flexDirection: PropTypes.object,
 	};
-
-	share() {
-		const { language } = this.props;
-
-		if (global.window) {
-			const { FB } = global.window;
-			let { href } = window.location;
-			href += (href.indexOf("?") > -1 ? "&" : "?") + "language=" + language;
-
-			if (FB) {
-				FB.ui(
-					{
-						method: "share",
-						href,
-					},
-					function(response) {}
-				);
-			}
-		}
-	}
-
 	render() {
-		const { previous, next, onNavigateTo, direction,  t } = this.props;
+		const { previous, next, onNavigateTo, t } = this.props;
+		const { direction,flexDirection } = this.context;
 		const rtl = direction === "rtl";
 
+		const createIcon = name => <MDIcon size={30} color="#000" name={name} style={styles.icon} />;
+
+		const nextIcon = !rtl ? createIcon("navigate-next") : createIcon("navigate-before");
+		const prevIcon = !rtl ? createIcon("navigate-before") : createIcon("navigate-next");
+
 		return (
-			<div className="ArticleFooter">
+			<View style={styles.Selectors}>
 				{next && (
-					<div
-						className="selector"
-						onClick={() => {
+					<TouchableOpacity
+						style={[styles.selector, flexDirection.row]}
+						onPress={() => {
 							onNavigateTo(next.fields.slug);
 						}}
 					>
-						<h1>
-							<small>{t("NEXT PAGE")}:</small>
-							{next.fields.title}
-						</h1>
-						{!rtl ? <NavigateNext className="icon" /> : <NavigateBefore className="icon" />}
-					</div>
+						<View style={styles.textContainer}>
+							<Text style={styles.small}>{t("NEXT PAGE")}</Text>
+							<Text style={styles.text}>{next.fields.title}</Text>
+						</View>
+						{nextIcon}
+					</TouchableOpacity>
 				)}
-				{next && <hr className={!previous ? "divider" : ""} />}
+				{previous && next && <View style={[styles.line]} />}
 				{previous && (
-					<div
-						className="selector"
-						onClick={() => {
+					<TouchableOpacity
+						style={[styles.selector, flexDirection.row]}
+						onPress={() => {
 							onNavigateTo(previous.fields.slug);
 						}}
 					>
-						<h1>
-							<small>{t("PREVIOUS PAGE")}:</small>
-							{previous.fields.title}
-						</h1>
-						{!rtl ? <NavigateBefore className="icon" /> : <NavigateNext className="icon" />}
-					</div>
+						<View style={styles.textContainer}>
+							<Text style={styles.small}>{t("PREVIOUS PAGE")}</Text>
+							<Text style={styles.text}>{previous.fields.title}</Text>
+						</View>
+						{prevIcon}
+					</TouchableOpacity>
 				)}
-				{previous && <hr className="divider" />}
-				<div className="selector" onClick={() => this.share()}>
-					<h1>{t("Share this page")}</h1>
-					<Share className="icon" />
-				</div>
-				{/*
-				<hr />
-				<div className="selector">
-					<h1>{t("Suggest changes to this page")}</h1>
-					<ModeEdit className="icon" />
-				</div>
-				*/}
-			</div>
+			</View>
 		);
 	}
 }
+
+const styles = StyleSheet.create({
+	Selectors: {
+		backgroundColor: nativeColors.titleBackground,
+		flex: 1,
+	},
+	textContainer: {
+		flex: 1,
+		flexGrow: 1,
+	},
+	small: {
+		fontSize: 12,
+		color: nativeColors.lighten("#000000", 50),
+		fontWeight: "bold",
+	},
+	text: {
+		fontSize: 18,
+		fontWeight: "bold",
+		color: "#000",
+	},
+	selector: {
+		marginHorizontal: 10,
+		minHeight: 60,
+		flex: 1,
+		flexDirection: "row",
+		justifyContent: "center",
+		alignItems: "center",
+	},
+	line: {
+		width: "95%",
+		backgroundColor: nativeColors.dividerColor,
+		alignSelf: "center",
+		height: 1,
+	},
+	icon: {
+		width: 40,
+	},
+});
 
 export default translate()(ArticleFooter);

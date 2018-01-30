@@ -1,102 +1,81 @@
 import React, { Component } from "react";
-import { Button, IconButton } from "material-ui";
-import Headroom from "react-headrooms";
-import PropTypes from "prop-types";
+import { View, Button, StyleSheet, Image, TouchableOpacity } from "react-native";
+import Text from "./Text";
 import { translate } from "react-i18next";
-
-import "./AppHeader.css";
+import HdrStyles from "./AppHeaderStyles";
+import PropTypes from "prop-types";
+import Icon from "react-native-vector-icons/MaterialIcons";
 
 class AppHeader extends Component {
-	static propTypes = {
-		onChangeCountry: PropTypes.func,
-		onGoToSearch: PropTypes.func,
-		onGoHome: PropTypes.func,
-		country: PropTypes.object,
-		language: PropTypes.string,
+	static propTypes = {};
+	static contextTypes = {
+		theme: PropTypes.object,
+		flexDirection: PropTypes.object,
 	};
-
-	state = {
-		search: false,
-		searchText: "",
-		active: false,
-	};
-	toggleClass() {
-		const { currentState } = this.state.active;
-		this.setState({ active: !currentState });
-	}
-	toggleSearch() {
-		const { search } = this.state;
-		if (!search) {
-			window.scrollTo(0, 0);
-		}
-		this.setState({ search: !search });
-	}
-	handleInputChange(event) {
-		const target = event.target;
-		const value = target.type === "checkbox" ? target.checked : target.value;
-		const name = target.name;
-
-		this.setState({
-			[name]: value,
-		});
-	}
-	handleSubmit(event) {
-		const { onGoToSearch } = this.props;
-		const { searchText } = this.state;
-
-		onGoToSearch(searchText);
-		setTimeout(() => {
-			this.setState({ search: false, searchText: "" });
-		}, 200);
-		event.preventDefault();
-	}
 
 	render() {
-		const { onChangeCountry, onGoHome, country, language, t } = this.props;
-		const { search, searchText } = this.state;
-		const noop = () => {
-			console.log("noop");
-		};
+		const { logo, country } = this.props;
+		const { theme, flexDirection } = this.context;
+
+		const { enableSearch } = { enableSearch: false };
 		return (
-			<div className="AppHeader">
-				<Headroom tolerance={5} offset={200}>
-					<div className="app-bar">
-						<div className={["app-bar-container logo", !(country && language) ? "logo-centered" : ""].join(" ")} onClick={onGoHome || noop}>
-							<img onClick={onGoHome} src={this.props.logo || "/logo.svg"} className="app-bar-logo" alt=" " />
-						</div>
-						{country &&
-							language && (
-								<div className="app-bar-container buttons">
-									<div className="app-bar-buttons">
-										<Button color="contrast" onClick={onChangeCountry || noop}>
-											{(country && country.fields.name) || " "}
-										</Button>
-										<div className="app-bar-separator" />
-										<IconButton className={`search-close ${[this.state.search && "active"].join(" ")}`} color="contrast" onClick={this.toggleSearch.bind(this)}>
-										</IconButton>
-									</div>
-								</div>
-							)}
-					</div>
-				</Headroom>
-				<div
-					style={{
-						backgroundColor: "#000000",
-						display: "block",
-						width: "100%",
-						height: 64,
-					}}
-				/>
-				{search && (
-					<form onSubmit={this.handleSubmit.bind(this)} className="SearchBar">
-						<input autoComplete="off" autoFocus name="searchText" placeholder={t("Search")} type="text" value={searchText} onChange={this.handleInputChange.bind(this)} />
-						{searchText && <i className="fa fa-times-circle" onClick={() => this.setState({ searchText: "" })} />}
-						<i className="fa fa-search" onClick={this.handleSubmit.bind(this)} />
-					</form>
+			<View style={[HdrStyles.header, flexDirection.row]}>
+				<View style={[{ flex: 1, alignItems: "center" }, !country && { flexBasis: "100%" }]}>
+					<Image style={HdrStyles.LogoImg} source={{ uri: `https://beta.refugee.info${logo}` }} />
+				</View>
+				{country && (
+					<View style={HdrStyles.countrySwitcherContainer}>
+						<TouchableOpacity
+							style={{
+								flex: 1,
+								flexGrow: 1,
+							}}
+						>
+							<Text
+								style={{
+									color: "#fff",
+									textAlign: "center",
+									fontWeight: "500",
+								}}
+							>
+								{(country.fields.name || "").toUpperCase()}
+							</Text>
+						</TouchableOpacity>
+						{enableSearch && (
+							<View
+								style={{
+									borderColor: theme.color,
+									borderLeftWidth: 1,
+									height: 30,
+									paddingHorizontal: 5,
+								}}
+							/>
+						)}
+						{enableSearch && (
+							<TouchableOpacity
+								style={{
+									width: 45,
+									alignItems: "center",
+								}}
+							>
+								<Icon style={{}} name="search" size={26} color="#ffffff" />
+							</TouchableOpacity>
+						)}
+					</View>
 				)}
-			</div>
+			</View>
 		);
 	}
 }
+
+const styles = StyleSheet.create({
+	header: {
+		backgroundColor: "#000000",
+		height: 65,
+		flexDirection: "row",
+		paddingTop: 5,
+		paddingHorizontal: 16,
+	},
+});
 
 export default translate()(AppHeader);

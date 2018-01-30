@@ -1,46 +1,54 @@
 import React, { Component } from "react";
 import { translate } from "react-i18next";
+import { View,  TouchableOpacity } from "react-native";
+import Icon from "react-native-vector-icons/MaterialIcons";
+import styles from "./SelectorsStyles";
+import PropTypes from "prop-types";
+import window from "../shared/nativeDimensions";
 
-import "./LanguageSelector.css";
-import getSessionStorage from "../shared/sessionStorage";
+const { width, heightWithoutHeader } = window;
+import Text from "./Text";
 
 class LanguageSelector extends Component {
 	static propTypes = {};
-
-	componentDidMount() {
-		if (global.window) {
-			const sessionStorage = getSessionStorage();
-			
-			delete sessionStorage.country;
-			delete sessionStorage.dismissedNotifications;
-		}
-	}
-
+	static contextTypes = {
+		config: PropTypes.object,
+		theme: PropTypes.object,
+	};
 	render() {
 		const { languages, onSelectLanguage, t } = this.props;
+		const { config, theme } = this.context;
+
 		return (
-			<div className="LanguageSelector">
-				<div className="spacer" style={{ minHeight: 65 }} />
-				<div className="text">
-					<i className="material-icons">translate</i>
-					{languages.map((c, i) => <h1 key={`choose-${c[0]}`}>{t("Choose your language", { lng: c[0] })}</h1>)}
-				</div>
-				<div className="spacer" />
+			<View style={[styles.Selectors, { height: heightWithoutHeader }]}>
+				<View style={styles.spacer} />
+
+				<Icon style={styles.i} name="translate" size={30} color={theme.color} />
+				<View>
+					{languages.map((c, i) => (
+						<Text style={styles.text} key={`choose-${c[0]}`}>
+							{t("Choose your language", { lng: c[0] }).toUpperCase()}
+						</Text>
+					))}
+				</View>
+				<View style={styles.spacer} />
 				{languages.map((c, i) => (
-					<button
-						className="item "
+					<TouchableOpacity
 						key={i}
-						onClick={() => {
+						onPress={() => {
 							onSelectLanguage(c[0]);
 						}}
+						title={c[1]}
+						style={styles.item}
 					>
-						{c[1]}
-					</button>
+						<Text style={styles.itemText}>{c[1]}</Text>
+					</TouchableOpacity>
 				))}
-				<div className="spacer" />
-				
-			</div>
+				<View style={styles.spacer} />
+			</View>
 		);
+
+		return <View />;
 	}
 }
 

@@ -1,9 +1,7 @@
 import { createStore, combineReducers, applyMiddleware, compose } from "redux";
-import createHistory from "history/createBrowserHistory";
 
 import reducers from "./reducers"; // Or wherever you keep your reducers
 import actions from "./actions";
-import c from "./content/cms";
 
 import { routerMiddleware } from "react-router-redux";
 import { routerReducer } from "react-router-redux";
@@ -11,34 +9,16 @@ import { routerReducer } from "react-router-redux";
 import reduxThunk from "redux-thunk";
 import reduxPromiseMiddleware from "redux-promise-middleware";
 import { analyticsMiddleware } from "./middleware.js";
-import ReactGA from "react-ga";
-ReactGA.initialize(c.siteConfig.gaTracker);
 
-const window = global.window || {};
-let history;
-if (window && window.document) {
-	history = createHistory();
-} else {
-	history = {
-		listen: () => {},
-		location: {
-			pathname: "",
-		},
-		push: () => {},
-		replace: () => {},
-	};
-}
+import createMemoryHistory from "history/createMemoryHistory";
 
-let initialState = {};
-if (window && window.initialState) {
-	initialState = window.initialState;
-}
+const history = createMemoryHistory();
 
 const middleware = [
+//	logMiddleware(),
 	reduxThunk, // Thunk middleware for Redux
 	reduxPromiseMiddleware(), // Resolve, reject promises with conditional optimistic updates
 	routerMiddleware(history), // routerMiddleware(browserHistory), // !! IMPORTANT for location.href changes,
-	analyticsMiddleware(ReactGA),
 ];
 
 const store = applyMiddleware(...middleware)(createStore)(
@@ -46,8 +26,21 @@ const store = applyMiddleware(...middleware)(createStore)(
 		...reducers,
 		router: routerReducer,
 	}),
-	initialState,
+	{},
 	compose(window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__())
 );
 
+function logMiddleware() {
+	/**
+     * This middleware parses all changes in route and sends a pageview to google analytics
+     */
+	return function middleware(store) {
+		return function wrapDispatchToAddLogging(next) {
+			return function dispatchAndLog(action) {
+				console.log(action.type, action.payload);
+				return next(action);
+			};
+		};
+	};
+}
 export { store, history, actions };
